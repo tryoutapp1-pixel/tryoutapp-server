@@ -1,5 +1,6 @@
 const pool = require('../config/database');
 const ApiError = require('../utils/ApiError');
+const fileStorage = require('./fileStorageService');
 
 const QUESTION_CODES = ['TWK', 'TIU', 'TKP'];
 const OPTION_CODES = ['A', 'B', 'C', 'D', 'E'];
@@ -155,24 +156,34 @@ async function getQuestionPackage(assessmentId) {
   if (!questionPackage) throw new ApiError(404, 'Question package not found');
   const [questions] = await pool.execute(
     `SELECT q.id, q.question_number, q.question_text, qt.code AS question_type, q.explanation,
-       q.image_attachment_id, qi.file_url AS question_image_url,
-       q.explanation_attachment_id, ei.file_url AS explanation_file_url
+       q.image_attachment_id, qi.object_key AS question_image_object_key,
+       q.explanation_attachment_id, ei.object_key AS explanation_file_object_key
      FROM questions q JOIN question_types qt ON qt.id = q.question_type_id
      LEFT JOIN attachments qi ON qi.id = q.image_attachment_id
      LEFT JOIN attachments ei ON ei.id = q.explanation_attachment_id
      WHERE q.question_package_id = ? ORDER BY q.question_number ASC`, [questionPackage.id]);
   const [options] = await pool.execute(
     `SELECT ao.id, ao.question_id, ao.option_code, ao.option_text, ao.option_order, ao.score,
-       ao.image_attachment_id, a.file_url AS option_image_url
+       ao.image_attachment_id, a.object_key AS option_image_object_key
      FROM answer_options ao LEFT JOIN attachments a ON a.id = ao.image_attachment_id
      JOIN questions q ON q.id = ao.question_id
      WHERE q.question_package_id = ? ORDER BY q.question_number ASC, ao.option_order ASC`, [questionPackage.id]);
   const optionsByQuestion = new Map();
   for (const option of options) {
+    const { option_image_object_key, ...view } = option;
+    view.option_image_url = option_image_object_key ? await fileStorage.getSignedUrl(option_image_object_key, 60) : null;
     if (!optionsByQuestion.has(option.question_id)) optionsByQuestion.set(option.question_id, []);
-    optionsByQuestion.get(option.question_id).push(option);
+    optionsByQuestion.get(option.question_id).push(view);
   }
-  return { assessment, ...questionPackage, questions: questions.map((question) => ({ ...question, options: optionsByQuestion.get(question.id) || [] })) };
+  const questionsWithUrls = [];
+  for (const question of questions) {
+    const { question_image_object_key, explanation_file_object_key, ...view } = question;
+    view.question_image_url = question_image_object_key ? await fileStorage.getSignedUrl(question_image_object_key, 60) : null;
+    view.explanation_file_url = explanation_file_object_key ? await fileStorage.getSignedUrl(explanation_file_object_key, 60) : null;
+    view.options = optionsByQuestion.get(question.id) || [];
+    questionsWithUrls.push(view);
+  }
+  return { assessment, ...questionPackage, questions: questionsWithUrls };
 }
 
 async function updateQuestion(id, data) {
@@ -211,7 +222,7 @@ async function updateOption(questionId, optionId, data) {
     if (!fields.length || fields.some((field) => !allowed.includes(field))) throw new ApiError(400, 'No editable option fields provided');
     if (Object.prototype.hasOwnProperty.call(data, 'image_attachment_id')) await validateAttachments(connection, [], [data.image_attachment_id]);
     if (Object.prototype.hasOwnProperty.call(data, 'option_order')) {
-      if (data.option_order < 1 || data.option_order > 4) throw new ApiError(400, 'option_order must be between 1 and 4');
+      if (data.option_order < 1 || data.option_order > 5) throw new ApiError(400, 'option_order must be between 1 and 5');
       data.option_code = OPTION_CODES[data.option_order - 1];
     }
     const updateFields = Object.keys(data);

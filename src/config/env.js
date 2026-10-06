@@ -1,4 +1,4 @@
-const required = ['DB_HOST', 'DB_NAME', 'DB_USER', 'JWT_SECRET'];
+const required = ['DB_HOST', 'DB_NAME', 'DB_USER', 'JWT_SECRET', 'R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET_NAME', 'R2_ENDPOINT'];
 
 for (const key of required) {
   if (!process.env[key]) throw new Error(`Missing required environment variable: ${key}`);
@@ -15,6 +15,15 @@ const env = {
     password: process.env.DB_PASSWORD || ''
   },
   jwtSecret: process.env.JWT_SECRET,
+  r2: {
+    accountId: process.env.R2_ACCOUNT_ID,
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    bucketName: process.env.R2_BUCKET_NAME,
+    endpoint: process.env.R2_ENDPOINT
+  },
+  maxImageSize: Number(process.env.MAX_IMAGE_SIZE || 5 * 1024 * 1024),
+  maxMaterialSize: Number(process.env.MAX_MATERIAL_SIZE || 25 * 1024 * 1024),
   smtp: {
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT || 2525),

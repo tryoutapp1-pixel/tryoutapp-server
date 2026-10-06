@@ -31,6 +31,15 @@ const assessmentList = [
   query('page').optional().isInt({ min: 1 }).toInt(),
   query('limit').optional().isInt({ min: 1, max: 100 }).toInt()
 ];
+const userList = assessmentList;
+const contentId = [idParam()];
+const materialList = assessmentList;
+const materialCreate = [
+  body('title').isString().trim().notEmpty().isLength({ max: 255 }),
+  body('description').optional({ nullable: true }).isString().bail().custom(textBytes(65535)),
+  body('access_type').optional().isIn(['FREE', 'PREMIUM'])
+];
+const materialRelease = [idParam()];
 
 const questionPackageCreate = [
   body('assessment_id').isInt({ min: 1, max: MAX_SAFE_ID }).withMessage('assessment_id must be a positive integer').toInt(),
@@ -60,7 +69,7 @@ const optionUpdate = [
   body('option_text').optional().isString().bail().trim().notEmpty().bail().custom(textBytes(65535)),
   body('score').optional().isFloat({ min: 0, max: MAX_SCORE }).bail().toFloat().custom(decimalScore),
   body('image_attachment_id').optional({ nullable: true }).isInt({ min: 1, max: MAX_SAFE_ID }).toInt(),
-  body('option_order').optional().isInt({ min: 1, max: 4 }).toInt(),
+  body('option_order').optional().isInt({ min: 1, max: 5 }).toInt(),
   body().custom((value) => ['option_text', 'score', 'image_attachment_id', 'option_order'].some((key) => Object.prototype.hasOwnProperty.call(value, key))).withMessage('At least one editable field is required')
 ];
-module.exports = { assessmentCreate, assessmentUpdate, assessmentId, assessmentList, questionPackageCreate, questionUpdate, optionUpdate };
+module.exports = { assessmentCreate, assessmentUpdate, assessmentId, assessmentList, questionPackageCreate, questionUpdate, optionUpdate, userList, contentId, materialList, materialCreate, materialRelease };
