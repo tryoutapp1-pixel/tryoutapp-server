@@ -33,7 +33,14 @@ const env = {
     from: process.env.SMTP_FROM
   },
   appBaseUrl: process.env.APP_BASE_URL || 'http://localhost:3000',
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  premiumPrice: Number(process.env.PREMIUM_PRICE || 300000),
+  premiumDurationDays: Number(process.env.PREMIUM_DURATION_DAYS || 365),
+  midtrans: {
+    serverKey: process.env.MIDTRANS_SERVER_KEY || '',
+    clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
+    isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true'
+  }
 };
 
 module.exports = { env };

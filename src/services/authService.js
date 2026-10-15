@@ -31,6 +31,7 @@ async function signup({ name, email, password }) {
     if (await users.findByEmail(connection, email)) throw new ApiError(409, 'Email is already registered');
     const passwordHash = await bcrypt.hash(password, 12);
     const userId = await users.create(connection, { name, email, passwordHash });
+    await connection.execute("INSERT INTO subscriptions (user_id, status, started_at, expired_at) VALUES (?, 'FREE', NULL, NULL)", [userId]);
     const rawToken = generateToken();
     await tokens.create(connection, VERIFICATION_TABLE, userId, hashToken(rawToken), expiryDate(24));
     // SMTP is intentionally awaited before commit: failed delivery rolls back user and token.
