@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2026 at 03:14 PM
+-- Generation Time: Oct 15, 2026 at 06:32 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -47,7 +47,12 @@ INSERT INTO `answer_options` (`id`, `question_id`, `option_code`, `option_text`,
 (50, 13, 'B', 'Mengutamakan kepentingan pribadi', 2, '0.00', NULL, '2026-10-01 22:10:37'),
 (51, 13, 'C', 'Acuh tak acuh', 3, '0.00', NULL, '2026-10-01 22:10:37'),
 (52, 13, 'D', 'Menyeimbangkan dunia', 4, '0.00', NULL, '2026-10-01 22:10:37'),
-(53, 13, 'E', 'Kembali ke masa lalu', 5, '0.00', NULL, '2026-10-01 22:10:37');
+(53, 13, 'E', 'Kembali ke masa lalu', 5, '0.00', NULL, '2026-10-01 22:10:37'),
+(54, 14, 'A', 'Menjaga keutuhan bangsa', 1, '5.00', NULL, '2026-10-11 21:28:52'),
+(55, 14, 'B', 'Mengutamakan kepentingan pribadi', 2, '0.00', NULL, '2026-10-11 21:28:52'),
+(56, 14, 'C', 'Acuh tak acuh', 3, '0.00', NULL, '2026-10-11 21:28:52'),
+(57, 14, 'D', 'Menyeimbangkan dunia', 4, '0.00', NULL, '2026-10-11 21:28:52'),
+(58, 14, 'E', 'Kembali ke masa lalu', 5, '0.00', NULL, '2026-10-11 21:28:52');
 
 -- --------------------------------------------------------
 
@@ -75,7 +80,8 @@ CREATE TABLE `assessments` (
 --
 
 INSERT INTO `assessments` (`id`, `type`, `title`, `description`, `access_type`, `duration_minutes`, `passing_score_twk`, `passing_score_tiu`, `passing_score_tkp`, `is_released`, `created_at`, `updated_at`) VALUES
-(1, 'TRYOUT', 'Try Out SKD 2', 'Paket latihan SKD', 'FREE', 100, '65.00', '80.00', '166.00', 0, '2026-10-01 21:28:55', '2026-10-05 19:50:09');
+(1, 'TRYOUT', 'Try Out SKD 2', 'Paket latihan SKD', 'FREE', 100, '65.00', '80.00', '166.00', 1, '2026-10-01 21:28:55', '2026-10-11 21:26:41'),
+(2, 'LATIHAN', 'Latihan 1', 'Paket latihan 1', 'FREE', NULL, '65.00', '80.00', '166.00', 1, '2026-10-11 21:28:20', '2026-10-11 21:28:56');
 
 --
 -- Triggers `assessments`
@@ -161,7 +167,8 @@ CREATE TABLE `attachments` (
 
 INSERT INTO `attachments` (`id`, `file_name`, `original_name`, `file_path`, `object_key`, `file_url`, `mime_type`, `file_size`, `created_at`) VALUES
 (6, '72b096f6-34ad-4487-a719-bf62949161b6.jpg', '3145081d-6a92-4c32-a8d6-065203f5097c_169.jpg', 'images/4ae81877-eb0c-41b6-b1ec-13adf6e1c55e.jpg', 'images/4ae81877-eb0c-41b6-b1ec-13adf6e1c55e.jpg', NULL, 'image/jpeg', 7265, '2026-10-06 21:53:31'),
-(7, '980a123f-56a2-491f-a664-a19604c21366.jpg', 'monyet.jpg', 'images/5a6db1de-5290-4229-a61e-c19f2e5d24f8.jpg', 'images/5a6db1de-5290-4229-a61e-c19f2e5d24f8.jpg', NULL, 'image/jpeg', 29702, '2026-10-06 21:59:55');
+(7, '980a123f-56a2-491f-a664-a19604c21366.jpg', 'monyet.jpg', 'images/5a6db1de-5290-4229-a61e-c19f2e5d24f8.jpg', 'images/5a6db1de-5290-4229-a61e-c19f2e5d24f8.jpg', NULL, 'image/jpeg', 29702, '2026-10-06 21:59:55'),
+(10, 'd4d7d018-cf21-4c57-b0ed-34e776cb5a78.pdf', 'SURAT KETERANGAN BELUM MENIKAH_Asyrafbilal Fadhila Bhinar Jaya.pdf', 'materials/d025cd87-5a6b-4af3-88b1-ca55dce33054.pdf', 'materials/d025cd87-5a6b-4af3-88b1-ca55dce33054.pdf', NULL, 'application/pdf', 16872, '2026-10-11 21:23:50');
 
 -- --------------------------------------------------------
 
@@ -182,6 +189,16 @@ CREATE TABLE `attempts` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `attempts`
+--
+
+INSERT INTO `attempts` (`id`, `user_id`, `assessment_id`, `question_package_id`, `started_at`, `expired_at`, `ended_at`, `status`, `created_at`, `updated_at`) VALUES
+(1, 3, 2, 14, '2026-10-11 21:35:21', NULL, '2026-10-11 21:46:36', 'COMPLETED', '2026-10-11 21:35:21', '2026-10-11 21:46:36'),
+(2, 3, 2, 14, '2026-10-11 21:48:11', NULL, '2026-10-11 22:48:28', 'COMPLETED', '2026-10-11 21:48:11', '2026-10-11 22:48:28'),
+(3, 3, 1, 13, '2026-10-11 22:52:26', '2026-10-12 00:32:26', '2026-10-11 22:54:16', 'COMPLETED', '2026-10-11 22:52:26', '2026-10-11 22:54:16'),
+(4, 3, 1, 13, '2026-10-14 21:28:17', '2026-10-14 23:08:17', '2026-10-14 21:30:09', 'COMPLETED', '2026-10-14 21:28:17', '2026-10-14 21:30:09');
+
 -- --------------------------------------------------------
 
 --
@@ -197,6 +214,16 @@ CREATE TABLE `attempt_answers` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `attempt_answers`
+--
+
+INSERT INTO `attempt_answers` (`id`, `attempt_id`, `question_id`, `selected_option_id`, `answered_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 14, 54, '2026-10-11 21:44:30', '2026-10-11 21:44:30', '2026-10-11 21:44:30'),
+(2, 2, 14, 54, '2026-10-11 22:48:11', '2026-10-11 22:48:11', '2026-10-11 22:48:11'),
+(3, 3, 13, 49, '2026-10-11 22:53:54', '2026-10-11 22:53:54', '2026-10-11 22:53:54'),
+(4, 4, 13, 49, '2026-10-14 21:29:51', '2026-10-14 21:29:51', '2026-10-14 21:29:51');
 
 -- --------------------------------------------------------
 
@@ -220,6 +247,16 @@ CREATE TABLE `attempt_results` (
   `calculated_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ;
 
+--
+-- Dumping data for table `attempt_results`
+--
+
+INSERT INTO `attempt_results` (`id`, `attempt_id`, `total_score`, `twk_score`, `tiu_score`, `tkp_score`, `twk_passed`, `tiu_passed`, `tkp_passed`, `total_correct`, `total_wrong`, `total_unanswered`, `calculated_at`) VALUES
+(1, 1, '5.00', '5.00', '0.00', '0.00', 0, 0, 0, 1, 0, 0, '2026-10-11 21:46:36'),
+(2, 2, '5.00', '5.00', '0.00', '0.00', 0, 0, 0, 1, 0, 0, '2026-10-11 22:48:28'),
+(3, 3, '0.00', '0.00', '0.00', '0.00', 0, 0, 0, 0, 1, 0, '2026-10-11 22:54:16'),
+(4, 4, '0.00', '0.00', '0.00', '0.00', 0, 0, 0, 0, 1, 0, '2026-10-14 21:30:09');
+
 -- --------------------------------------------------------
 
 --
@@ -241,7 +278,9 @@ CREATE TABLE `email_verification_tokens` (
 
 INSERT INTO `email_verification_tokens` (`id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`) VALUES
 (2, 2, 'b91b293e410e83a2c36a359b28136e41455bce5b123d5adb88a6326d4783d201', '2026-10-01 21:02:41', '2026-09-30 21:10:26', '2026-09-30 21:02:41'),
-(3, 3, '849ffdcc85e814af204decde3a65d17716068ccbd95309fc78d0f6cf37b71e42', '2026-10-02 21:30:44', '2026-10-01 21:31:55', '2026-10-01 21:30:44');
+(3, 3, '849ffdcc85e814af204decde3a65d17716068ccbd95309fc78d0f6cf37b71e42', '2026-10-02 21:30:44', '2026-10-01 21:31:55', '2026-10-01 21:30:44'),
+(4, 4, '04f598958e0442c03838e363362059e4b3e799534e4bdcaf36d58c8adf85ca1e', '2026-10-12 21:55:39', '2026-10-11 21:58:26', '2026-10-11 21:55:39'),
+(5, 5, '586ab08726926d371d9c720d2d4a522ae3231522e9c54621f8b7c4dca359af25', '2026-10-12 21:59:00', NULL, '2026-10-11 21:59:00');
 
 -- --------------------------------------------------------
 
@@ -260,6 +299,13 @@ CREATE TABLE `feedbacks` (
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ;
 
+--
+-- Dumping data for table `feedbacks`
+--
+
+INSERT INTO `feedbacks` (`id`, `user_id`, `assessment_id`, `rating`, `difficulty`, `comment`, `created_at`, `updated_at`) VALUES
+(1, 3, 1, 4, 'MEDIUM', 'ok sip', '2026-10-14 21:34:15', '2026-10-14 21:34:15');
+
 -- --------------------------------------------------------
 
 --
@@ -276,6 +322,13 @@ CREATE TABLE `materials` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `materials`
+--
+
+INSERT INTO `materials` (`id`, `title`, `description`, `access_type`, `attachment_id`, `is_released`, `created_at`, `updated_at`) VALUES
+(5, 'materi 4', NULL, 'FREE', 10, 1, '2026-10-11 21:23:50', '2026-10-11 21:24:23');
 
 -- --------------------------------------------------------
 
@@ -322,7 +375,8 @@ CREATE TABLE `questions` (
 --
 
 INSERT INTO `questions` (`id`, `question_package_id`, `question_type_id`, `question_number`, `question_text`, `explanation`, `image_attachment_id`, `explanation_attachment_id`, `created_at`) VALUES
-(13, 13, 1, 1, 'Berapakah hasil dari 2 + 2?', 'Persatuan menjaga keutuhan bangsa.', NULL, NULL, '2026-10-01 22:10:37');
+(13, 13, 1, 1, 'Berapakah hasil dari 2 + 2?', 'Persatuan menjaga keutuhan bangsa.', NULL, NULL, '2026-10-01 22:10:37'),
+(14, 14, 1, 1, 'Apa makna persatuan dalam kehidupan berbangsa?', 'Persatuan menjaga keutuhan bangsa.', NULL, NULL, '2026-10-11 21:28:52');
 
 -- --------------------------------------------------------
 
@@ -342,7 +396,8 @@ CREATE TABLE `question_packages` (
 --
 
 INSERT INTO `question_packages` (`id`, `assessment_id`, `created_at`, `updated_at`) VALUES
-(13, 1, '2026-10-01 22:10:37', '2026-10-01 22:10:37');
+(13, 1, '2026-10-01 22:10:37', '2026-10-01 22:10:37'),
+(14, 2, '2026-10-11 21:28:52', '2026-10-11 21:28:52');
 
 -- --------------------------------------------------------
 
@@ -374,13 +429,23 @@ INSERT INTO `question_types` (`id`, `code`, `name`) VALUES
 CREATE TABLE `subscriptions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `status` enum('ACTIVE','EXPIRED','CANCELLED') NOT NULL DEFAULT 'ACTIVE',
-  `started_at` datetime NOT NULL,
-  `expired_at` datetime NOT NULL,
+  `status` enum('FREE','PREMIUM') NOT NULL DEFAULT 'FREE',
+  `started_at` datetime DEFAULT NULL,
+  `expired_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `active_user_id` bigint(20) UNSIGNED GENERATED ALWAYS AS (case when `status` = 'ACTIVE' then `user_id` else NULL end) STORED
+  `active_user_id` bigint(20) UNSIGNED GENERATED ALWAYS AS (case when `status` = 'PREMIUM' then `user_id` else NULL end) STORED
 ) ;
+
+--
+-- Dumping data for table `subscriptions`
+--
+
+INSERT INTO `subscriptions` (`id`, `user_id`, `status`, `started_at`, `expired_at`, `created_at`, `updated_at`) VALUES
+(1, 3, 'PREMIUM', '2026-10-15 22:45:54', '2027-10-15 22:45:54', '2026-10-11 21:04:21', '2026-10-15 22:45:54'),
+(2, 2, 'PREMIUM', '2026-10-11 00:00:00', '2036-12-31 23:59:59', '2026-10-11 21:04:21', '2026-10-11 21:08:02'),
+(4, 4, 'PREMIUM', '2026-10-15 23:15:56', '2030-10-14 23:15:56', '2026-10-11 21:55:39', '2026-10-15 23:23:35'),
+(5, 5, 'FREE', NULL, NULL, '2026-10-11 21:59:00', '2026-10-11 21:59:00');
 
 -- --------------------------------------------------------
 
@@ -393,6 +458,7 @@ CREATE TABLE `transactions` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `order_id` varchar(100) NOT NULL,
   `amount` decimal(15,2) NOT NULL,
+  `snap_token` varchar(255) DEFAULT NULL,
   `status` enum('PENDING','PAID','FAILED','EXPIRED','CANCELLED') NOT NULL DEFAULT 'PENDING',
   `payment_method` varchar(50) DEFAULT NULL,
   `midtrans_transaction_id` varchar(100) DEFAULT NULL,
@@ -401,6 +467,17 @@ CREATE TABLE `transactions` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ;
+
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`id`, `user_id`, `order_id`, `amount`, `snap_token`, `status`, `payment_method`, `midtrans_transaction_id`, `midtrans_transaction_status`, `paid_at`, `created_at`, `updated_at`) VALUES
+(9, 3, 'PREM-3-1792077039392-701932d8', '300000.00', 'f7896bfb-1e69-41e5-ac17-050db3c91c1d', 'PAID', 'bank_transfer', '62c13d77-2b27-4961-9968-681a00243590', 'settlement', '2026-10-15 22:45:54', '2026-10-15 22:10:39', '2026-10-15 22:45:54'),
+(12, 4, 'PREM-4-1792080940152-622085a6', '300000.00', '5fc8eb8f-79b4-4a8e-a498-9477c7658f4d', 'PAID', 'bank_transfer', '9988471f-e84c-4300-be25-a7bbdaf7da3e', 'settlement', '2026-10-15 23:15:56', '2026-10-15 23:15:40', '2026-10-15 23:15:56'),
+(13, 4, 'PREM-4-1792081060507-7f2ea6b9', '300000.00', 'b82f86fc-ae0a-450b-aab7-82b08c1ea955', 'PAID', 'bank_transfer', 'dc875c1e-483b-4a86-9902-4e90cd5a513f', 'settlement', '2026-10-15 23:18:15', '2026-10-15 23:17:40', '2026-10-15 23:18:15'),
+(14, 4, 'PREM-4-1792081239171-d899a0b1', '300000.00', 'fd719388-6257-405e-8215-8f9199ad3dec', 'PAID', 'bank_transfer', 'd1ff422e-3c9b-4444-ab41-e6ebabccaf07', 'settlement', '2026-10-15 23:20:55', '2026-10-15 23:20:39', '2026-10-15 23:20:55'),
+(15, 4, 'PREM-4-1792081403906-084a5361', '300000.00', '74ecfec1-d474-4b50-8b81-3d3fa4104cd5', 'PAID', 'bank_transfer', '63351992-c631-420c-af7d-1922d9bb6e61', 'settlement', '2026-10-15 23:23:35', '2026-10-15 23:23:23', '2026-10-15 23:23:35');
 
 -- --------------------------------------------------------
 
@@ -426,7 +503,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `status`, `email_verified_at`, `created_at`, `updated_at`) VALUES
 (2, 'asraf', 'asraf@gmail.com', '$2b$12$XmNDfmeNs4YW7UeH57q08uxQG3XxBlRpXGd3rBOtfNXmZtr.PMio6', 'ADMIN', 'ACTIVE', '2026-09-30 21:10:26', '2026-09-30 21:02:41', '2026-10-01 21:26:22'),
-(3, 'budi', 'budi@gmail.com', '$2b$12$4C1yB2euDTsN.TKUrej2W./iOGll7N50.AzdwK3e5CkA8WV680Gnq', 'USER', 'ACTIVE', '2026-10-01 21:31:55', '2026-10-01 21:30:44', '2026-10-05 19:46:30');
+(3, 'budi', 'budi@gmail.com', '$2b$12$4C1yB2euDTsN.TKUrej2W./iOGll7N50.AzdwK3e5CkA8WV680Gnq', 'USER', 'ACTIVE', '2026-10-01 21:31:55', '2026-10-01 21:30:44', '2026-10-05 19:46:30'),
+(4, 'iqbal baru', 'iqbal@gmail.com', '$2b$12$fAyQKAJE0tSvgCp4QfAjouK8QXDcaoviU06chSgLqOTt.KKVX/08C', 'USER', 'ACTIVE', '2026-10-11 21:58:26', '2026-10-11 21:55:39', '2026-10-11 22:12:42'),
+(5, 'iqbal new', 'iqbalnew@gmail.com', '$2b$12$LrKKJV7X1CKR2fpWqObmD.P9jlb64NYDNOip0A6aOj/XpLCDwUNRS', 'USER', 'PENDING_VERIFICATION', NULL, '2026-10-11 21:59:00', '2026-10-11 21:59:00');
 
 --
 -- Indexes for dumped tables
@@ -505,6 +584,7 @@ ALTER TABLE `email_verification_tokens`
 --
 ALTER TABLE `feedbacks`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_feedbacks_user_assessment` (`user_id`,`assessment_id`),
   ADD KEY `idx_feedbacks_user` (`user_id`),
   ADD KEY `idx_feedbacks_assessment` (`assessment_id`),
   ADD KEY `idx_feedbacks_rating` (`rating`);
@@ -557,6 +637,7 @@ ALTER TABLE `question_types`
 --
 ALTER TABLE `subscriptions`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uk_subscriptions_user_id` (`user_id`),
   ADD UNIQUE KEY `uk_subscriptions_active_user` (`active_user_id`),
   ADD KEY `idx_subscriptions_user_id` (`user_id`),
   ADD KEY `idx_subscriptions_status` (`status`),
@@ -607,13 +688,13 @@ ALTER TABLE `attachments`
 -- AUTO_INCREMENT for table `attempts`
 --
 ALTER TABLE `attempts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `attempt_answers`
 --
 ALTER TABLE `attempt_answers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `attempt_results`
@@ -637,7 +718,7 @@ ALTER TABLE `feedbacks`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `password_reset_tokens`
@@ -655,7 +736,7 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `question_packages`
 --
 ALTER TABLE `question_packages`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `question_types`
@@ -679,7 +760,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
