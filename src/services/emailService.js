@@ -14,7 +14,8 @@ function transporter() {
 }
 
 async function sendVerificationEmail({ email, name, token }) {
-  const url = `${env.appBaseUrl}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const frontendUrl = env.frontendUrl.replace(/\/+$/, '');
+  const url = `${frontendUrl}/verify-email?token=${encodeURIComponent(token)}`;
   return transporter().sendMail({
     from: env.smtp.from, to: email, subject: 'Verify your Tryout App email',
     text: `Hello ${name}, verify your email: ${url}`
@@ -22,7 +23,8 @@ async function sendVerificationEmail({ email, name, token }) {
 }
 
 async function sendPasswordResetEmail({ email, name, token }) {
-  const url = `${env.frontendUrl}/reset-password?token=${encodeURIComponent(token)}`;
+  const frontendUrl = env.frontendUrl.replace(/\/+$/, '');
+  const url = `${frontendUrl}/reset-password?token=${encodeURIComponent(token)}`;
   return transporter().sendMail({
     from: env.smtp.from, to: email, subject: 'Reset your Tryout App password',
     text: `Hello ${name}, reset your password using this link: ${url}`

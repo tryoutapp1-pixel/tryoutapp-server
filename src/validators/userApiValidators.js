@@ -6,5 +6,5 @@ const assessmentId = [id('assessmentId')];
 const attemptId = [id('attemptId')];
 const answer = [id('attemptId'),body('question_id').isInt({min:1}).toInt(),body('selected_option_id').isInt({min:1}).toInt()];
 const feedback = [id('assessmentId'),body('rating').isInt({min:1,max:5}).toInt(),body('difficulty').isIn(['EASY','MEDIUM','HARD']),body('comment').optional({nullable:true}).isString().isLength({max:5000})];
-const notification = [body('order_id').isString().notEmpty(),body('status_code').isString().notEmpty(),body('gross_amount').isString().notEmpty(),body('transaction_status').isString().notEmpty()];
+const notification = [body('order_id').isString().notEmpty(),body('status_code').isString().notEmpty(),body('gross_amount').isString().notEmpty(),body('signature_key').isString().notEmpty(),body('transaction_status').isString().notEmpty()];
 module.exports={pagination,positiveId,assessmentId,attemptId,answer,feedback,notification};
