@@ -10,6 +10,8 @@ const { env } = require('../config/env');
 router.use(authenticateToken, authorizeRoles('ADMIN'));
 router.get('/users', validators.userList, validateRequest, asyncHandler(controller.listUsers));
 router.get('/users/:id', validators.contentId, validateRequest, asyncHandler(controller.getUser));
+router.patch('/users/:id/suspend', validators.contentId, validateRequest, asyncHandler(controller.suspendUser));
+router.patch('/users/:id/reactivate', validators.contentId, validateRequest, asyncHandler(controller.reactivateUser));
 router.get('/images', validators.userList, validateRequest, asyncHandler(controller.listImages));
 router.post('/images', singleFile('file', env.maxImageSize), asyncHandler(controller.createImage));
 router.get('/images/:id', validators.contentId, validateRequest, asyncHandler(controller.getImage));

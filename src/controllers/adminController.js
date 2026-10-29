@@ -35,6 +35,12 @@ async function updateOption(req, res) {
 }
 async function listUsers(req, res) { res.json({ success: true, data: await content.listUsers({ page: req.query.page || 1, limit: req.query.limit || 20 }) }); }
 async function getUser(req, res) { res.json({ success: true, data: await content.getUser(req.params.id) }); }
+async function suspendUser(req, res) {
+  res.json({ success: true, message: 'User suspended successfully', data: await content.setUserSuspended(req.params.id, true) });
+}
+async function reactivateUser(req, res) {
+  res.json({ success: true, message: 'User reactivated successfully', data: await content.setUserSuspended(req.params.id, false) });
+}
 async function listImages(req, res) { res.json({ success: true, data: await content.listImages({ page: req.query.page || 1, limit: req.query.limit || 20 }) }); }
 async function createImage(req, res) { res.status(201).json({ success: true, message: 'Image uploaded successfully', data: await content.createImage(req.file) }); }
 async function getImage(req, res) {
@@ -59,4 +65,4 @@ async function setMaterialUnrelease(req, res) {
   res.json({ success: true, message: 'Material unreleased successfully', data: await content.setMaterialReleased(req.params.id, false) });
 }
 // async function setMaterialReleased(req, res) { res.json({ success: true, message: `Material ${req.body.is_released ? 'released' : 'unreleased'} successfully`, data: await content.setMaterialReleased(req.params.id, req.body.is_released) }); }
-module.exports = { createAssessment, listAssessments, getAssessment, updateAssessment, release, unrelease, createQuestionPackage, getQuestionPackage, updateQuestion, updateOption, listUsers, getUser, listImages, createImage, getImage, deleteImage, listMaterials, createMaterial, getMaterial, getMaterialFile, deleteMaterial, setMaterialRelease, setMaterialUnrelease };
+module.exports = { createAssessment, listAssessments, getAssessment, updateAssessment, release, unrelease, createQuestionPackage, getQuestionPackage, updateQuestion, updateOption, listUsers, getUser, suspendUser, reactivateUser, listImages, createImage, getImage, deleteImage, listMaterials, createMaterial, getMaterial, getMaterialFile, deleteMaterial, setMaterialRelease, setMaterialUnrelease };

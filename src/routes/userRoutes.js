@@ -1,14 +1,16 @@
 const router = require('express').Router();
 const controller = require('../controllers/userController');
-const { authenticateToken, authorizeRoles } = require('../middlewares/auth');
+const { authenticateToken, authorizeRoles, requireActiveStatus } = require('../middlewares/auth');
 const { validateRequest } = require('../middlewares/errorHandler');
 const { updateProfile } = require('../validators/userValidators');
 const api = require('../controllers/userApiController');
 const v = require('../validators/userApiValidators');
-const userAuth = [authenticateToken, authorizeRoles('USER')];
+// Every USER-domain route requires an authenticated USER whose account is ACTIVE.
+// requireActiveStatus blocks suspended accounts immediately (JWTs have no expiry).
+const userAuth = [authenticateToken, authorizeRoles('USER'), requireActiveStatus];
 
-router.get('/me', authenticateToken, controller.getMe);
-router.patch('/me', authenticateToken, updateProfile, validateRequest, controller.updateMe);
+router.get('/me', authenticateToken, requireActiveStatus, controller.getMe);
+router.patch('/me', authenticateToken, requireActiveStatus, updateProfile, validateRequest, controller.updateMe);
 
 router.get('/premium/offer', userAuth, api.offer);
 router.get('/subscription', userAuth, api.subscription);

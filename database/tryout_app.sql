@@ -491,7 +491,7 @@ CREATE TABLE `users` (
   `email` varchar(191) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `role` enum('USER','ADMIN') NOT NULL DEFAULT 'USER',
-  `status` enum('PENDING_VERIFICATION','ACTIVE') NOT NULL DEFAULT 'PENDING_VERIFICATION',
+  `status` enum('PENDING_VERIFICATION','ACTIVE','SUSPENDED') NOT NULL DEFAULT 'PENDING_VERIFICATION',
   `email_verified_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()

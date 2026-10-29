@@ -14,6 +14,21 @@ async function getUser(id) {
   const [[user]] = await pool.execute('SELECT id, name, email, role, status, email_verified_at, created_at, updated_at FROM users WHERE id = ?', [id]);
   if (!user) throw new ApiError(404, 'User not found'); return user;
 }
+// Reversible account suspension. suspend=true -> SUSPENDED, false -> ACTIVE.
+// Only USER accounts can be suspended; admins and not-yet-verified accounts are
+// left alone to avoid locking out administration or breaking the verify flow.
+async function setUserSuspended(id, suspend) {
+  const [[user]] = await pool.execute('SELECT id, role, status FROM users WHERE id = ?', [id]);
+  if (!user) throw new ApiError(404, 'User not found');
+  if (user.role !== 'USER') throw new ApiError(400, 'Only USER accounts can be suspended');
+  if (suspend) {
+    if (user.status === 'PENDING_VERIFICATION') throw new ApiError(409, 'Cannot suspend an account that has not verified its email');
+  } else if (user.status !== 'SUSPENDED') {
+    throw new ApiError(409, 'Account is not suspended');
+  }
+  await pool.execute('UPDATE users SET status = ? WHERE id = ?', [suspend ? 'SUSPENDED' : 'ACTIVE', id]);
+  return getUser(id);
+}
 async function listImages(args) {
   const { page, limit, offset } = pageArgs(args);
   const [rows] = await pool.execute("SELECT * FROM attachments WHERE mime_type LIKE 'image/%' ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?", [limit, offset]);
@@ -118,4 +133,4 @@ async function setMaterialReleased(id, released) {
   // const [result] = await pool.execute('UPDATE materials SET is_released = ? WHERE id = ?', [released, id]);
   // if (!result.affectedRows) throw new ApiError(404, 'Material not found'); return getMaterial(id);
 }
-module.exports = { listUsers, getUser, listImages, createImage, getImage, deleteImage, listMaterials, getMaterial, createMaterial, getMaterialFile, deleteMaterial, setMaterialReleased };
+module.exports = { listUsers, getUser, setUserSuspended, listImages, createImage, getImage, deleteImage, listMaterials, getMaterial, createMaterial, getMaterialFile, deleteMaterial, setMaterialReleased };
