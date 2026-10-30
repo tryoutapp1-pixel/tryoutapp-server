@@ -7,12 +7,58 @@ const paginated = (items, page, limit, total) => ({ items, pagination: { page, l
 function attachmentView(row) { return { id: row.id, original_filename: row.original_name, mime_type: row.mime_type, size: row.file_size, created_at: row.created_at, url: `/api/admin/images/${row.id}` }; }
 async function listUsers(args) {
   const { page, limit, offset } = pageArgs(args);
-  const [items] = await pool.execute('SELECT id, name, email, role, status, email_verified_at, created_at, updated_at FROM users ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?', [limit, offset]);
-  const [[{ total }]] = await pool.execute('SELECT COUNT(*) AS total FROM users'); return paginated(items, page, limit, total);
+
+  const [items] = await pool.execute(
+    `SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.role,
+        u.status,
+        u.email_verified_at,
+        u.created_at,
+        u.updated_at,
+        s.status AS subscription_status,
+        s.started_at AS subscription_started_at,
+        s.expired_at AS subscription_expired_at
+     FROM users u
+     LEFT JOIN subscriptions s ON s.user_id = u.id
+     ORDER BY u.created_at DESC, u.id DESC
+     LIMIT ? OFFSET ?`,
+    [limit, offset]
+  );
+
+  const [[{ total }]] = await pool.execute(
+    'SELECT COUNT(*) AS total FROM users'
+  );
+
+  return paginated(items, page, limit, total);
 }
 async function getUser(id) {
-  const [[user]] = await pool.execute('SELECT id, name, email, role, status, email_verified_at, created_at, updated_at FROM users WHERE id = ?', [id]);
-  if (!user) throw new ApiError(404, 'User not found'); return user;
+  const [[user]] = await pool.execute(
+    `SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.role,
+        u.status,
+        u.email_verified_at,
+        u.created_at,
+        u.updated_at,
+        s.status AS subscription_status,
+        s.started_at AS subscription_started_at,
+        s.expired_at AS subscription_expired_at
+     FROM users u
+     LEFT JOIN subscriptions s ON s.user_id = u.id
+     WHERE u.id = ?`,
+    [id]
+  );
+
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return user;
 }
 // Reversible account suspension. suspend=true -> SUSPENDED, false -> ACTIVE.
 // Only USER accounts can be suspended; admins and not-yet-verified accounts are
