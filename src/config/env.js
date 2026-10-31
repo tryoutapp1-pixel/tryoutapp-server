@@ -37,6 +37,7 @@ const env = {
   premiumPrice: Number(process.env.PREMIUM_PRICE || 300000),
   premiumDurationDays: Number(process.env.PREMIUM_DURATION_DAYS || 365),
   midtrans: {
+    signatureSecretKey: process.env.MIDTRANS_SIGNATURE_SECRET_KEY || '',
     serverKey: process.env.MIDTRANS_SERVER_KEY || '',
     clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
     isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true'
