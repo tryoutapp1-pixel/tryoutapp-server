@@ -86,7 +86,7 @@ async function midtransNotification(body) {
   const { order_id: orderId, status_code: statusCode, gross_amount: grossAmount, signature_key: signature, transaction_status: remoteStatus, fraud_status: fraudStatus } = body || {};
   if (![orderId, statusCode, grossAmount, remoteStatus].every((v) => typeof v === 'string' && v.length)) throw new ApiError(400, 'Invalid Midtrans notification payload');
   if (!env.midtrans.serverKey) throw new ApiError(503, 'Midtrans is not configured');
-  const expected = crypto.createHash('sha512').update(`${orderId}${statusCode}${grossAmount}${env.midtrans.serverKey}`).digest('hex');
+  const expected = crypto.createHash('sha512').update(`${orderId}${statusCode}${grossAmount}${env.midtrans.signatureSecretKey}`).digest('hex');
   const a = Buffer.from(expected); const b = Buffer.from(signature);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new ApiError(401, 'Invalid Midtrans signature');
   const connection = await pool.getConnection();
