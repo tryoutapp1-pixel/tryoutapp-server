@@ -8,6 +8,8 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
+
+// Order matters: security headers, CORS, body parsing, routes, 404, errors.
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -17,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 
