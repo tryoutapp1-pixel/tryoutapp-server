@@ -71,6 +71,25 @@ async function checkAccess(executor, userId, accessType) {
   }
 }
 
+/**
+ * HTML label for a Premium duration, e.g. `tahun <small>(365 hari)</small>`.
+ * Whole years or months become the main label; the exact day count follows in
+ * a smaller font. Other values fall back to `N hari`. Built only from a number,
+ * so the markup is safe for the client to render as HTML.
+ *
+ * @param {number} days
+ * @returns {string}
+ */
+function durationDescriptionHtml(days) {
+  const count = Math.trunc(Number(days));
+  /** @param {number} n @param {string} unit */
+  const label = (n, unit) => (n === 1 ? unit : `${n} ${unit}`);
+  let main = null;
+  if (count > 0 && count % 365 === 0) main = label(count / 365, 'tahun');
+  else if (count > 0 && count % 30 === 0) main = label(count / 30, 'bulan');
+  return main ? `${main} <small class="text-label-small">(${count} hari)</small>` : `${count} hari`;
+}
+
 async function offer() {
   return [
     {
@@ -87,7 +106,7 @@ async function offer() {
       price: env.premiumPrice,
       currency: 'IDR',
       duration_days: env.premiumDurationDays,
-      duration_description: `${env.premiumDurationDays} hari`
+      duration_description: durationDescriptionHtml(env.premiumDurationDays)
     }
   ];
 }
@@ -718,7 +737,9 @@ async function attemptHistory(userId, type, assessmentId) {
   const [rows] = await pool.execute(
     `SELECT at.id AS attempt_id, at.assessment_id, a.title AS assessment_title, at.status,
        COALESCE(at.ended_at, at.updated_at) AS completed_at,
-       ar.total_score, ar.twk_score, ar.tiu_score, ar.tkp_score
+       ar.total_score, ar.twk_score, ar.tiu_score, ar.tkp_score,
+       ar.twk_passed, ar.tiu_passed, ar.tkp_passed,
+       ar.total_correct, ar.total_wrong, ar.total_unanswered
      FROM attempts at
      JOIN assessments a ON a.id = at.assessment_id AND a.type = ?
      JOIN attempt_results ar ON ar.attempt_id = at.id
@@ -731,7 +752,13 @@ async function attemptHistory(userId, type, assessmentId) {
     total_score: Number(row.total_score),
     twk_score: Number(row.twk_score),
     tiu_score: Number(row.tiu_score),
-    tkp_score: Number(row.tkp_score)
+    tkp_score: Number(row.tkp_score),
+    twk_passed: Boolean(row.twk_passed),
+    tiu_passed: Boolean(row.tiu_passed),
+    tkp_passed: Boolean(row.tkp_passed),
+    total_correct: Number(row.total_correct),
+    total_wrong: Number(row.total_wrong),
+    total_unanswered: Number(row.total_unanswered)
   }));
 }
 
