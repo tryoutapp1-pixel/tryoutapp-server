@@ -137,6 +137,24 @@ const MIDTRANS_STATUS_MAP = {
 };
 
 /**
+ * Builds the Snap transaction request for an order. `callbacks.finish` sets the
+ * page Snap sends the customer to ("Return to merchant's page", redirect-based
+ * methods). It overrides the Finish Redirect URL in the Midtrans Dashboard and
+ * follows FRONTEND_URL, so each environment redirects to its own frontend.
+ * Midtrans appends ?order_id=...&status_code=...&transaction_status=...
+ *
+ * @param {string} orderId
+ * @param {number} amount
+ */
+function snapTransactionParams(orderId, amount) {
+  return {
+    transaction_details: { order_id: orderId, gross_amount: amount },
+    credit_card: { secure: true },
+    callbacks: { finish: `${env.frontendUrl.replace(/\/+$/, '')}/app/payment/success` }
+  };
+}
+
+/**
  * Creates a Snap payment, or resumes the user's latest PENDING one when
  * Midtrans still reports it as pending.
  *
@@ -163,10 +181,7 @@ async function createPayment(userId) {
       "INSERT INTO transactions (user_id, order_id, amount, status) VALUES (?, ?, ?, 'PENDING')",
       [userId, orderId, env.premiumPrice]
     );
-    const token = await snap.createTransaction({
-      transaction_details: { order_id: orderId, gross_amount: env.premiumPrice },
-      credit_card: { secure: true }
-    });
+    const token = await snap.createTransaction(snapTransactionParams(orderId, env.premiumPrice));
     await connection.execute('UPDATE transactions SET snap_token = ? WHERE id = ?', [token.token, result.insertId]);
 
     return {
@@ -193,9 +208,7 @@ async function resumePendingPayment(connection, existing) {
     if (remote.transaction_status === 'pending') {
       let snapToken = existing.snap_token;
       if (!snapToken) {
-        const token = await snap.createTransaction({
-          transaction_details: { order_id: existing.order_id, gross_amount: Number(existing.amount) }
-        });
+        const token = await snap.createTransaction(snapTransactionParams(existing.order_id, Number(existing.amount)));
         snapToken = token.token;
         await connection.execute('UPDATE transactions SET snap_token = ? WHERE id = ?', [snapToken, existing.id]);
       }
@@ -216,8 +229,13 @@ async function resumePendingPayment(connection, existing) {
       [terminal, remote.transaction_status, existing.id]
     );
   } catch (error) {
-    // Midtrans returns 404 when it never saw the order; treat it as expired.
-    if (error.statusCode !== 404 && error.httpStatusCode !== 404) throw error;
+    // Midtrans returns 404 when it never saw the order (e.g. the Snap popup was
+    // closed before a payment method was chosen); treat it as expired so a new
+    // order is created. The status API answers HTTP 200 with a body
+    // `status_code` of "404" (a string), which midtrans-client passes through as
+    // `httpStatusCode`, so compare numerically.
+    const code = Number(error.httpStatusCode ?? error.statusCode ?? error.ApiResponse?.status_code);
+    if (code !== 404) throw error;
     await connection.execute("UPDATE transactions SET status = 'EXPIRED' WHERE id = ? AND status = 'PENDING'", [existing.id]);
   }
   return null;
