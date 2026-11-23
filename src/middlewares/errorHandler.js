@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const { env } = require('../config/env');
+const ApiError = require('../utils/ApiError');
 
 /** @typedef {import('express').Request} Request */
 /** @typedef {import('express').Response} Response */
@@ -35,9 +36,12 @@ function errorHandler(err, req, res, next) {
   const candidate = Number(err.statusCode || err.status);
   const status = Number.isInteger(candidate) && candidate >= 400 && candidate < 600 ? candidate : 500;
   if (status >= 500) console.error(err);
+  // Only ApiError codes are exposed; Node/library codes (e.g. ECONNRESET) stay internal.
+  const code = status < 500 && err instanceof ApiError && typeof err.code === 'string' ? err.code : undefined;
   res.status(status).json({
     success: false,
     message: status >= 500 ? 'Internal server error' : err.message,
+    ...(code && { code }),
     ...(env.nodeEnv === 'development' && status >= 500 && { stack: err.stack })
   });
 }

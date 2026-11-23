@@ -19,11 +19,26 @@ const RESET_TTL_HOURS = 1;
  * Creates a PENDING_VERIFICATION user with a FREE subscription and emails a
  * verification link. A failed email rolls the whole signup back.
  *
+ * An existing PENDING_VERIFICATION email gets a 409 with code
+ * EMAIL_PENDING_VERIFICATION so the client can point the user to the
+ * verification flow. The existing account is left unchanged and no email is
+ * sent; the user resends verification explicitly.
+ *
  * @param {{ name: string, email: string, password: string }} input
  */
 async function signup({ name, email, password }) {
   return withTransaction(async (connection) => {
-    if (await users.findByEmail(connection, email)) throw new ApiError(409, 'Email is already registered');
+    const existing = await users.findByEmail(connection, email);
+    if (existing) {
+      if (existing.status === 'PENDING_VERIFICATION') {
+        throw new ApiError(
+          409,
+          'Email is already registered but not verified. Please check your email for the verification link.',
+          'EMAIL_PENDING_VERIFICATION'
+        );
+      }
+      throw new ApiError(409, 'Email is already registered');
+    }
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
     const userId = await users.create(connection, { name, email, passwordHash });
     await connection.execute(
